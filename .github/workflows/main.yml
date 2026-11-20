@@ -23,16 +23,20 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Preparar pagina
+      - name: Conferir index.html
         run: |
+          if [ ! -f index.html ]; then echo "ERRO: falta o arquivo index.html na raiz do repositorio"; ls -la; exit 1; fi
           mkdir -p www
-          if [ -f index.html ]; then cp index.html www/index.html; fi
+          cp index.html www/index.html
 
-      - name: Criar projeto Capacitor
+      - name: Instalar Capacitor
         run: |
           npm init -y
           npm i @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
-          npx cap init "Escala JET" com.jet.escala --web-dir=www
+          echo '{"appId":"com.jet.escala","appName":"Escala JET","webDir":"www"}' > capacitor.config.json
+
+      - name: Criar projeto Android
+        run: |
           npx cap add android
           npx cap sync android
 
