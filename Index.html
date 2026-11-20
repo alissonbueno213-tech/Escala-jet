@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Escala de Trabalho</title>
+<style>
+:root{--bg:#f3f4f6;--tx:#161a1f;--mut:#6b7280;--bd:#dde1e6;--cd:#fff;--ac:#0f7b4f;--acx:#fff;--rd:#d71920;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121518;--tx:#eceff2;--mut:#9aa3ad;--bd:#303840;--cd:#1c2127;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121518;--tx:#eceff2;--mut:#9aa3ad;--bd:#303840;--cd:#1c2127;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:12px}
+.wrap{max-width:600px;margin:0 auto}
+.nav{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.nav b{flex:1;text-align:center;font-size:17px}
+button{font:inherit;border:1px solid var(--bd);background:var(--cd);color:var(--tx);border-radius:10px;padding:10px 14px}
+button.p{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:600}
+.sheet{background:#fff;color:#111;border:3px solid var(--rd);border-radius:18px;padding:10px 10px 8px}
+.logo{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px 0 8px}
+.logo i{flex:1;height:22px;background:repeating-linear-gradient(var(--rd) 0 5px,transparent 5px 9px)}
+.logo b{font:italic 900 54px/1 "Arial Black",Impact,system-ui,sans-serif;color:var(--rd);letter-spacing:-3px;padding-right:6px}
+.ttl{background:var(--rd);color:#fff;border-radius:12px;text-align:center;font-weight:900;font-size:clamp(14px,4.2vw,22px);padding:9px 6px;text-transform:uppercase;margin-bottom:8px}
+.g{display:grid;grid-template-columns:27% 46% 27%}
+.g>div{padding:8px 4px;text-align:center;display:flex;align-items:center;justify-content:center;flex-wrap:wrap}
+.h>div{background:var(--rd);color:#fff;font-weight:800;font-size:clamp(11px,3.3vw,16px);text-transform:uppercase;line-height:1.1}
+.h>div:first-child{border-radius:10px 0 0 0}.h>div:last-child{border-radius:0 10px 0 0}
+.r>div{border-bottom:2px solid var(--rd);font-weight:700;font-size:clamp(12px,3.6vw,17px);line-height:1.2;cursor:pointer}
+.r>div:first-child{border-left:2px solid var(--rd);border-right:2px solid var(--rd);flex-direction:column;gap:0}
+.r>div:last-child{border-left:2px solid var(--rd);border-right:2px solid var(--rd)}
+.r>div:nth-child(2){border-right:2px solid var(--rd)}
+.r small{font-weight:600;font-size:.82em;color:#444}
+.r.pass>div{text-decoration:line-through;opacity:.45}
+.r.hj>div{background:#ffd9d6;font-weight:900;font-size:clamp(14px,4.3vw,20px);padding:13px 4px;border-top:3px solid var(--rd)}
+.hjb{background:var(--rd);color:#fff!important;border-radius:6px;padding:0 7px;font-weight:800!important;margin-top:3px;text-decoration:none}
+.ed{padding:10px;border:2px solid var(--rd);border-top:0;background:#fff}
+.ed p{margin:0 0 8px;font-size:14px;color:#555}
+.ed .b{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ed button{background:#fff;color:#111;border-color:#bbb}
+.ed button.on{background:var(--rd);color:#fff;border-color:var(--rd);font-weight:700}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:12px;margin:12px 0}
+.card h2{font-size:14px;margin:0 0 6px}
+.sm{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row button{flex:1}
+.note{font-size:13px;color:var(--mut)}
+@media print{body{background:#fff;padding:0}.noprint,.ed{display:none!important}:root{color-scheme:light}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav noprint"><button id="pv">‹</button><b id="mt"></b><button id="nx">›</button></div>
+<label class="note noprint" style="display:flex;gap:8px;align-items:center;margin:0 0 10px"><input type="checkbox" id="rk" checked> Riscar dias passados automaticamente</label>
+<div class="sheet">
+ <div class="logo"><i></i><b>JET</b><i></i></div>
+ <div class="ttl" id="ttl"></div>
+ <div class="g h"><div>Data</div><div>Quem vai trabalhar</div><div>Quem vai folgar</div></div>
+ <div id="lst"></div>
+</div>
+<div class="card noprint"><h2>Total de folgas no mês</h2><div id="rs"></div></div>
+<div class="row noprint"><button class="p" id="cp">Copiar p/ WhatsApp</button><button id="pr">Imprimir / PDF</button></div>
+<div class="row noprint" style="margin-top:8px"><button id="rf">Refazer o ano</button></div>
+<p class="note noprint" id="msg">Toque num dia para trocar quem folga.</p>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const P=["Gabriel","Alisson","Matheus","Dielton"];
+const MN=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const DS=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const MS=["2026-11","2026-12","2027-01","2027-02","2027-03","2027-04","2027-05","2027-06","2027-07","2027-08","2027-09","2027-10","2027-11"];
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+let D={},mi=0,SEL="",RK=true;
+
+function gerar(){
+ D={};const NOV={19:[2],20:[],21:[0],22:[1],23:[2],24:[0,3],25:[1],26:[2],27:[0],28:[1],29:[2],30:[3]};
+ for(const k in NOV)D["2026-11-"+k]=NOV[k];
+ const R=[0,1,2,3],d=new Date("2026-12-01T12:00");
+ for(let n=0;n<353;n++,d.setDate(d.getDate()+1))D[iso(d)]=[R[n%4]];
+}
+function save(){try{localStorage.setItem("esc13",JSON.stringify({D,mi,RK}))}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem("esc13")||"null");if(s&&s.D){D=s.D;mi=Math.min(Math.max(+s.mi||0,0),MS.length-1);RK=s.RK!==false;return true}}catch(e){}return false}
+const keys=()=>Object.keys(D).filter(k=>k.startsWith(MS[mi])).sort();
+const dm=k=>k.slice(8)+"/"+k.slice(5,7);
+
+function draw(){
+ const [y,m]=MS[mi].split("-");$("mt").textContent=MN[+m-1]+" "+y;
+ $("ttl").textContent="Escala de trabalho — "+MN[+m-1]+" "+y;
+ $("pv").disabled=mi===0;$("nx").disabled=mi===MS.length-1;
+ $("rk").checked=RK;const hoje=iso(new Date()),cnt=P.map(()=>0);let h="";
+ keys().forEach(k=>{
+  const dt=new Date(k+"T12:00"),off=D[k];
+  off.forEach(i=>cnt[i]++);
+  const wk=P.filter((p,i)=>!off.includes(i));
+  h+=`<div class="g r${k===hoje?" hj":""}${RK&&k<hoje?" pass":""}" data-k="${k}"><div>${dm(k)}<small>(${DS[dt.getDay()]})</small>${k===hoje?'<small class="hjb">HOJE</small>':""}</div><div>${wk.join(", ")}</div><div>${off.map(i=>P[i]).join(", ")||"—"}</div></div>`;
+  if(k===SEL)h+=`<div class="ed"><p>Quem folga neste dia?</p><div class="b">`+P.map((p,i)=>`<button class="${off.includes(i)?"on":""}" data-i="${i}">${p}</button>`).join("")+`</div></div>`;
+ });
+ $("lst").innerHTML=h;
+ $("rs").innerHTML=P.map((p,i)=>`<div class="sm"><span>${p}</span><b>${cnt[i]}</b></div>`).join("");
+ save();
+}
+$("lst").addEventListener("click",e=>{
+ const b=e.target.closest(".ed button");
+ if(b){const a=D[SEL],i=+b.dataset.i;D[SEL]=a.includes(i)?a.filter(x=>x!==i):[...a,i].sort();draw();return}
+ const r=e.target.closest(".r");if(r){SEL=SEL===r.dataset.k?"":r.dataset.k;draw()}
+});
+$("pv").onclick=()=>{if(mi>0){mi--;SEL="";draw()}};
+$("nx").onclick=()=>{if(mi<MS.length-1){mi++;SEL="";draw()}};
+$("pr").onclick=()=>window.print();
+$("rf").onclick=()=>{if(confirm("Refazer o ano inteiro? Os ajustes manuais serão perdidos.")){gerar();SEL="";draw()}};
+$("cp").onclick=async()=>{
+ const L=[$("ttl").textContent.toUpperCase(),""];
+ keys().forEach(k=>{const dt=new Date(k+"T12:00"),off=D[k];L.push(`${dm(k)} (${DS[dt.getDay()]}) | Trabalham: ${P.filter((p,i)=>!off.includes(i)).join(", ")} | Folga: ${off.map(i=>P[i]).join(", ")||"ninguém"}`)});
+ const t=L.join("\n");
+ try{await navigator.clipboard.writeText(t);$("msg").textContent="Copiado! Cole no WhatsApp."}
+ catch(e){const x=document.createElement("textarea");x.value=t;document.body.appendChild(x);x.select();try{document.execCommand("copy");$("msg").textContent="Copiado! Cole no WhatsApp."}catch(_){$("msg").textContent="Não foi possível copiar."}x.remove()}
+};
+if(!load())gerar();
+$("rk").onchange=()=>{RK=$("rk").checked;draw()};
+const tm=MS.indexOf(iso(new Date()).slice(0,7));if(tm>=0)mi=tm;
+draw();
+const hj=document.querySelector(".r.hj");if(hj)hj.scrollIntoView({block:"center"});
+</script>
+</body>
+</html>
